@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+.container, .container-fluid {
+    max-width: 100%;
+    margin: 0 auto;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2em;
+}
+form {
+    gap: 10px;
+    margin-bottom: 20px;
+}
+form input, form button, form select {
+    padding: 8px;
+    font-size: 1em;
+}
+form button {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead {
+    background: #27ae60;
+    color: #fff;
+}
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+a {
+    color: #2980b9;
+    text-decoration: none;
+    margin-right: 10px;
+}
+a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .container, .container-fluid {
+        padding: 5px;
+        box-shadow: none;
+    }
+    h1 {
+        font-size: 1.3em;
+    }
+    th, td {
+        padding: 6px;
+        font-size: 0.95em;
+    }
+    .form-control, .form-select, .btn {
+        font-size: 1em;
+        padding: 8px 6px;
+    }
+    .navbar .container-fluid {
+        padding-left: 5px; padding-right: 5px;
+    }
+    .table-responsive {overflow-x: auto;}
+    .table th, .table td {white-space: nowrap;}
+}
