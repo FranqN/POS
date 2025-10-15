@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Product History - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">History for {{ product.name }}</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Change Type</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+                <th>User</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.change_type }}</td>
+                <td>{{ h.old_value }}</td>
+                <td>{{ h.new_value }}</td>
+                <td>{{ h.user.username if h.user else 'Unknown' }}</td>
+                <td>{{ h.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('products_page') }}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}

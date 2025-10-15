@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Edit Inventory Settings - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Edit Inventory Settings</h1>
+    <form method="post" class="row g-3">
+        <div class="col-md-4">
+            <label>Low Stock Threshold</label>
+            <input type="number" name="threshold" class="form-control" value="{{ threshold }}">
+        </div>
+        <div class="col-md-4">
+            <label>Currency Symbol</label>
+            <input type="text" name="currency_symbol" class="form-control" value="{{ settings['currency_symbol'].value }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ url_for('system_settings_overview') }}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+    <h5 class="mt-4">Categories</h5>
+    <form method="post" class="row g-3">
+        <div class="col-md-6">
+            <input type="text" name="add_category" class="form-control" placeholder="Add Category">
+        </div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-success">Add Category</button>
+        </div>
+    </form>
+    <ul class="list-group mb-3 mt-2">
+        {% for category in categories %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ category.name }}
+            <form method="post" style="display:inline;">
+                <button name="delete_category" value="{{ category.id }}" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

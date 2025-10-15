@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}Make a Sale - Duka POS{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4 text-center">Make a Sale</h1>
+    <!-- Product Search Input (not a form) -->
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" class="form-control" id="productSearchInput" placeholder="Search product...">
+            <button type="button" class="btn btn-outline-secondary" id="clearSearchBtn">Clear</button>
+        </div>
+    </div>
+    <!-- Sale Form -->
+    <form class="mb-3" method="POST" action="{{ url_for('make_sale') }}">
+        {{ form.csrf_token }}
+        <div class="row g-3 align-items-end mb-3">
+            <div class="col-md-6">
+                <select class="form-select" id="productSelect">
+                    <option value="">Select Product</option>
+                    {% for product in products %}
+                    <option value="{{ product.id }}"
+                        data-stock="{{ product.stock }}"
+                        data-selling="{{ product.selling_price }}">
+                        {{ product.name }} (Stock: {{ product.stock }}, Price: {{ product.selling_price }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" id="productQty" class="form-control" placeholder="Quantity" min="1">
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-success" id="addProductBtn">Add</button>
+            </div>
+        </div>
+        <div id="products-list"></div>
+        <div class="mb-3">
+            <label class="form-label">Payment Method</label>
+            <select name="payment_method" class="form-select" required>
+                {% for method in payment_methods %}
+                <option value="{{ method }}">{{ method }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="row g-3 align-items-center mb-2" id="mpesaPhoneRow" style="display:none;">
+            <div class="col-md-6">
+                <label class="form-label">Mpesa Phone Number</label>
+                <input type="text" name="mpesa_phone" id="mpesaPhone" class="form-control" placeholder="e.g. 07XXXXXXXX" maxlength="10">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4 ms-auto">
+                <button type="submit" class="btn btn-success w-100">Complete Sale</button>
+            </div>
+        </div>
+    </form>
+    {% if receipt %}
+    <div id="receiptPreview" class="mt-5">
+        <h5 class="text-center mb-3">Receipt Preview</h5>
+        <div class="border rounded p-4 bg-light mx-auto shadow-sm" style="max-width:420px;">
+            <div id="receiptContent">
+                <!-- Business Details -->
+                <div class="text-center mb-3">
+                    <h4 class="mb-1" style="letter-spacing:1px;">Duka Yetu Gen Store</h4>
+                    <div class="small text-secondary mb-1">Location: Hill Tea</div>
+                    <div class="small text-secondary mb-1">Contact No: <span class="fw-bold">0724375332</span></div>
+                    <div class="small text-secondary mb-1">Paybill: <span class="fw-bold">Equity Bank: 247247</span> Account No <span class="fw-bold">0724375332</span></div>
+                    <div class="small text-secondary mb-2">KCB Bank: <span class="fw-bold">522533</span> Account No: <span class="fw-bold">5763631</span></div>
+                    <hr class="my-2">
+                </div>
+                <div class="mb-2"><strong>Payment:</strong> {{ receipt.payment_method }}</div>
+                <hr>
+                <table class="table table-sm table-bordered mb-2">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in receipt['items'] %}
+                        <tr>
+                            <td>{{ item.product }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.unit_price }}</td>
+                            <td>{{ item.total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <hr>
+                <div class="mb-2 fs-5 text-end"><strong>Grand Total:</strong> <span class="text-success">{{ receipt.grand_total }}</span></div>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-outline-secondary me-2" onclick="printReceipt()"><i class="bi bi-printer"></i> Print Receipt</button>
+                {% if receipt.sale_id %}
+                <a id="downloadPdfBtn" class="btn btn-outline-primary" href="{{ url_for('download_receipt', sale_id=receipt.sale_id) }}" target="_blank"><i class="bi bi-file-earmark-pdf"></i> Download PDF</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('addProductBtn').onclick = function() {
+    var select = document.getElementById('productSelect');
+    var qtyInput = document.getElementById('productQty');
+    var pid = select.value;
+    var pname = select.options[select.selectedIndex].text;
+    var stock = select.options[select.selectedIndex].getAttribute('data-stock');
+    var selling = select.options[select.selectedIndex].getAttribute('data-selling');
+    var qty = qtyInput.value;
+
+    if (!pid || !qty || qty < 1) {
+        alert('Select a product and enter a valid quantity.');
+        return;
+    }
+    if (parseInt(qty) > parseInt(stock)) {
+        alert('Insufficient stock!');
+        return;
+    }
+
+    // Create product row
+    var row = document.createElement('div');
+    row.className = 'row g-3 align-items-end mb-2 product-row';
+    row.innerHTML = `
+        <div class="col-md-6">
+            <input type="hidden" name="product_id[]" value="${pid}">
+            <input type="hidden" name="unit_price[]" value="${selling}">
+            <input type="hidden" name="stock[]" value="${stock}">
+            <span class="fw-bold">${pname}</span>
+        </div>
+        <div class="col-md-3">
+            <input type="number" name="quantity[]" class="form-control" value="${qty}" min="1" readonly>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-danger remove-product-row"><i class="bi bi-x"></i> Remove</button>
+        </div>
+    `;
+    document.getElementById('products-list').appendChild(row);
+
+    // Reset selectors
+    select.selectedIndex = 0;
+    qtyInput.value = '';
+};
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-product-row')) {
+        e.target.closest('.product-row').remove();
+    }
+});
+
+// Improved print function for mobile
+function printReceipt() {
+    var content = document.getElementById('receiptContent').innerHTML;
+    var win = window.open('', '_blank');
+    win.document.write('<html><head><title>Receipt</title>');
+    win.document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+    win.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">');
+    win.document.write('</head><body>');
+    win.document.write('<div class="container mt-4">' + content + '</div>');
+    win.document.write('<script>window.onload = function() { window.print(); }<\/script>');
+    win.document.write('</body></html>');
+    win.document.close();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var paymentSelect = document.querySelector('select[name="payment_method"]');
+    var mpesaRow = document.getElementById('mpesaPhoneRow');
+    paymentSelect.addEventListener('change', function() {
+        if (this.value.toLowerCase() === 'mpesa') {
+            mpesaRow.style.display = '';
+        } else {
+            mpesaRow.style.display = 'none';
+        }
+    });
+
+    // Mpesa phone validation on form submit
+    var saleForm = document.querySelector('form[method="POST"]');
+    saleForm.addEventListener('submit', function(e) {
+        var paymentMethod = paymentSelect.value.toLowerCase();
+        if (paymentMethod === 'mpesa') {
+            var phone = document.getElementById('mpesaPhone').value.trim();
+            var phonePattern = /^07\d{8}$/;
+            if (!phonePattern.test(phone)) {
+                alert('Please enter a valid Mpesa phone number starting with 07 and 10 digits long (e.g. 0712345678).');
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+});
+
+// Live search: filter dropdown as you type
+document.getElementById('productSearchInput').addEventListener('input', function() {
+    var search = this.value.toLowerCase();
+    var select = document.getElementById('productSelect');
+    var found = false;
+    for (var i = 0; i < select.options.length; i++) {
+        var option = select.options[i];
+        if (i === 0) { // "Select Product"
+            option.style.display = '';
+            continue;
+        }
+        var text = option.text.toLowerCase();
+        if (text.includes(search)) {
+            option.style.display = '';
+            if (!found) {
+                select.selectedIndex = i;
+                found = true;
+            }
+        } else {
+            option.style.display = 'none';
+        }
+    }
+    // If nothing matches, reset to "Select Product"
+    if (!found) select.selectedIndex = 0;
+});
+
+// Clear search and show all products
+document.getElementById('clearSearchBtn').addEventListener('click', function() {
+    document.getElementById('productSearchInput').value = '';
+    var select = document.getElementById('productSelect');
+    for (var i = 0; i < select.options.length; i++) {
+        select.options[i].style.display = '';
+    }
+    select.selectedIndex = 0;
+});
+</script>
+{% endblock %}

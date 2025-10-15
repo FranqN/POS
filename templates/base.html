@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Duka{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 8px;
+        }
+        .container {
+            margin-top: 2rem;
+        }
+        .nav-link.active, .nav-link:focus {
+            font-weight: bold;
+            color: #fff !important;
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.25rem;
+        }
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1080;
+        }
+        .card {
+            border-radius: 0.75rem;
+        }
+        .btn, .form-control, .form-select {
+            border-radius: 0.5rem;
+        }
+        /* Responsive table for mobile */
+        .table-responsive {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 576px) {
+            .container {
+                margin-top: 1rem;
+            }
+            .navbar-brand img {
+                height: 24px;
+            }
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <!-- Placeholder logo, replace with your logo.png if available -->
+                {% if business_settings['business_logo'] and business_settings['business_logo'].value %}
+                    <img src="{{ url_for('static', filename=business_settings['business_logo'].value) }}" alt="Logo" style="max-height:40px;">
+                {% endif %}
+                Duka POS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('user_id') %}
+                        {% if session.get('role') == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'products_page' %}active{% endif %}" href="{{ url_for('products_page') }}">
+                                <i class="bi bi-box-seam"></i> Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'customers_list' %}active{% endif %}" href="{{ url_for('customers_list') }}">
+                                <i class="bi bi-person-lines-fill"></i> Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'make_sale' %}active{% endif %}" href="{{ url_for('make_sale') }}">
+                                <i class="bi bi-cash-stack"></i> Make Sale
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'sales_list' %}active{% endif %}" href="{{ url_for('sales_list') }}">
+                                <i class="bi bi-receipt"></i> Sales List
+                            </a>
+                        </li>
+                        {% if session.get('role') != 'staff' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'sales_breakdown' %}active{% endif %}" href="{{ url_for('sales_breakdown') }}">
+                                <i class="bi bi-bar-chart-line"></i> Sales Breakdown
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'suppliers_list' %}active{% endif %}" href="{{ url_for('suppliers_list') }}">
+                                <i class="bi bi-truck"></i> Suppliers
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if session.get('role') == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.endpoint == 'user_list' %}active{% endif %}" href="{{ url_for('user_list') }}">
+                                    <i class="bi bi-people"></i> Users
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.endpoint == 'audit_logs' %}active{% endif %}" href="{{ url_for('audit_logs') }}">
+                                    <i class="bi bi-journal-text"></i> Audit Logs
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.endpoint == 'system_settings' %}active{% endif %}" href="{{ url_for('system_settings') }}">
+                                    <i class="bi bi-gear"></i> Settings
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'signup' %}active{% endif %}" href="{{ url_for('signup') }}">
+                                <i class="bi bi-person-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="pt-4">
+        <div class="container">
+            <!-- Breadcrumbs (optional, can be customized per page) -->
+            {% block breadcrumbs %}{% endblock %}
+            <!-- Toast notifications -->
+            <div class="toast-container position-fixed top-0 end-0 p-3">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="toast align-items-center text-bg-{{ category if category in ['success','danger','warning','info'] else 'primary' }} border-0 show mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="d-flex">
+                                    <div class="toast-body">
+                                        {{ message }}
+                                    </div>
+                                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show all toasts automatically
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            toastElList.forEach(function(toastEl) {
+                new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,14 @@
+    {% extends "base.html" %}
+    {% block title %}Welcome | Duka Inventory{% endblock %}
+    {% block content %}
+    <div class="text-center mt-5">
+        <h1 class="display-4">Welcome to Duka Inventory System</h1>
+        <p class="lead">Manage your products efficiently and securely.</p>
+        {% if not session.get('user_id') %}
+          <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-2">Login</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-outline-primary btn-lg">Sign Up</a>
+        {% else %}
+          <a href="{{ url_for('products_page') }}" class="btn btn-success btn-lg">Go to Products</a>
+        {% endif %}
+    </div>
+    {% endblock %}

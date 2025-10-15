@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Suppliers - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Suppliers</h1>
+    <a href="{{ url_for('add_supplier') }}" class="btn btn-success mb-3">Add Supplier</a>
+    <form action="{{ url_for('import_suppliers') }}" method="post" enctype="multipart/form-data" class="mb-3">
+        <input type="file" name="csv" accept=".csv" required>
+        <button type="submit" class="btn btn-primary btn-sm">Import Suppliers</button>
+        <a href="{{ url_for('export_suppliers') }}" class="btn btn-success btn-sm">Export Suppliers</a>
+    </form>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Bank</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.company }}</td>
+                <td>{{ supplier.contact_email }}</td>
+                <td>{{ supplier.contact_phone }}</td>
+                <td>{{ supplier.bank_name }}</td>
+                <td>
+                    <a href="{{ url_for('edit_supplier', supplier_id=supplier.id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{{ url_for('delete_supplier', supplier_id=supplier.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this supplier?');">Delete</a>
+                    <a href="{{ url_for('supplier_products', supplier_id=supplier.id) }}" class="btn btn-info btn-sm">Products</a>
+                    <a href="{{ url_for('supplier_orders', supplier_id=supplier.id) }}" class="btn btn-warning btn-sm">Orders</a>
+                    <a href="{{ url_for('supplier_report', supplier_id=supplier.id) }}" class="btn btn-secondary btn-sm">Report</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up | Duka Inventory</title>
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block title %}Sign Up | Duka Inventory{% endblock %}
+    {% block content %}
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <h2 class="mb-4">Sign Up</h2>
+        <form method="post">
+          <div class="mb-3">
+            <input name="username" class="form-control" placeholder="Username" required>
+          </div>
+          <div class="mb-3">
+            <input name="password" type="password" class="form-control" placeholder="Password" required>
+          </div>
+          <div class="mb-3">
+            <label>Role:</label>
+            <select name="role" class="form-select">
+              <option value="staff">Staff</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Sign Up</button>
+        </form>
+        <div class="mt-3">
+          <small>Already have an account? <a href="{{ url_for('login') }}">Login</a></small>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

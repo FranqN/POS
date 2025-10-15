@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Sales List - Duka POS{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h1 class="mb-0">Sales List</h1>
+        <span class="badge bg-success fs-5">Total Sales: {{ total_sales }}</span>
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light sticky-top">
+            <form class="row g-2 align-items-center" method="get">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Search product..." value="{{ search }}">
+                        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i> Search</button>
+                        {% if search %}
+                        <a href="{{ url_for('sales_list') }}" class="btn btn-outline-secondary">Clear</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="payment_method">
+                        <option value="">All Payment Methods</option>
+                        {% for method in payment_methods %}
+                        <option value="{{ method }}" {% if payment_method == method %}selected{% endif %}>{{ method }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            <th>Payment</th>
+                            <th>User</th>
+                            {% if can_delete %}
+                            <th style="min-width: 110px;">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales.items %}
+                        <tr>
+                            <td>{{ sale.timestamp.strftime('%Y-%m-%d %H:%M') if sale.timestamp else '' }}</td>
+                            <td>{{ sale.product.name if sale.product else '' }}</td>
+                            <td>{{ sale.quantity }}</td>
+                            <td>{{ sale.product.selling_price if sale.product else '' }}</td>
+                            <td>{{ sale.total_price }}</td>
+                            <td>{{ sale.payment_method }}</td>
+                            <td>{{ sale.user.username if sale.user else '' }}</td>
+                            {% if can_delete %}
+                            <td>
+                                <form method="POST" action="{{ url_for('delete_sale', sale_id=sale.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this sale?');"><i class="bi bi-trash"></i> Delete</button>
+                                </form>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if sales.has_prev %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('sales_list', page=sales.prev_num) }}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ sales.page }}</span></li>
+                    {% if sales.has_next %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('sales_list', page=sales.next_num) }}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <a href="{{ url_for('export_sales') }}" class="btn btn-success btn-sm mb-2">Export Sales</a>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Edit User & Security Settings - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Edit User & Security Settings</h1>
+    <form method="post" class="row g-3">
+        <div class="col-md-4">
+            <label>Password Policy (min length)</label>
+            <input type="number" name="password_policy" class="form-control" value="{{ settings['password_policy'].value }}">
+        </div>
+        <div class="col-md-4">
+            <label>Enable User Signup</label>
+            <select name="signup_enabled" class="form-select">
+                <option value="yes" {% if settings['signup_enabled'].value == 'yes' %}selected{% endif %}>Yes</option>
+                <option value="no" {% if settings['signup_enabled'].value == 'no' %}selected{% endif %}>No</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Session Timeout (minutes)</label>
+            <input type="number" name="session_timeout" class="form-control" value="{{ settings['session_timeout'].value }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ url_for('system_settings_overview') }}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

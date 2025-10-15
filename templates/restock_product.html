@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Restock Product - Duka POS{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Restock {{ product.name }}</h3>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="add_stock" class="form-label">Add Stock</label>
+                            <input type="number" class="form-control" name="add_stock" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Restock</button>
+                    </form>
+                    <a href="{{ url_for('products_page') }}" class="btn btn-link mt-3">Back to Products</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

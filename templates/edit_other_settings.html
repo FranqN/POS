@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Edit Other Settings - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Edit Other Settings</h1>
+    <form method="post" class="row g-3">
+        <div class="col-md-4">
+            <label>Date/Time Format</label>
+            <input type="text" name="date_format" class="form-control" value="{{ settings['date_format'].value }}">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ url_for('system_settings_overview') }}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

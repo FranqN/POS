@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}System Settings - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">System Settings</h1>
+    <div class="list-group">
+        <a href="{{ url_for('edit_business_details') }}" class="list-group-item list-group-item-action">
+            <strong>Business Details</strong>
+            <span class="float-end text-primary">Edit</span>
+        </a>
+        <a href="{{ url_for('edit_inventory_settings') }}" class="list-group-item list-group-item-action">
+            <strong>Inventory Settings</strong>
+            <span class="float-end text-primary">Edit</span>
+        </a>
+        <a href="{{ url_for('edit_sales_settings') }}" class="list-group-item list-group-item-action">
+            <strong>Sales Settings</strong>
+            <span class="float-end text-primary">Edit</span>
+        </a>
+        <a href="{{ url_for('edit_user_security_settings') }}" class="list-group-item list-group-item-action">
+            <strong>User & Security Settings</strong>
+            <span class="float-end text-primary">Edit</span>
+        </a>
+        <a href="{{ url_for('edit_other_settings') }}" class="list-group-item list-group-item-action">
+            <strong>Other Settings</strong>
+            <span class="float-end text-primary">Edit</span>
+        </a>
+    </div>
+    <form action="{{ url_for('restore_data') }}" method="post" enctype="multipart/form-data" class="mb-3">
+        <input type="file" name="json" accept=".json" required>
+        <button type="submit" class="btn btn-warning btn-sm">Restore Backup</button>
+        <a href="{{ url_for('backup_data') }}" class="btn btn-success btn-sm">Download Backup</a>
+    </form>
+</div>
+{% endblock %}

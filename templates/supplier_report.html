@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Supplier Report - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Report for {{ supplier.name }}</h1>
+    <h4>Total Purchases: <span class="badge bg-success">{{ total_purchases }}</span></h4>
+    <h5>Outstanding Orders</h5>
+    <ul class="list-group mb-4">
+        {% for order in outstanding_orders %}
+        <li class="list-group-item">
+            {{ order.product.name }} - {{ order.quantity }} units, {{ order.cost }} ({{ order.status }})
+        </li>
+        {% else %}
+        <li class="list-group-item">No outstanding orders.</li>
+        {% endfor %}
+    </ul>
+    <h5>All Orders</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+                <th>Status</th>
+                <th>Order Date</th>
+                <th>Delivery Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.cost }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ order.delivery_date.strftime('%Y-%m-%d') if order.delivery_date else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('suppliers_list') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

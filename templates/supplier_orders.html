@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Supplier Orders - Duka{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Orders from {{ supplier.name }}</h1>
+    <form method="post" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <select name="product_id" class="form-select" required>
+                <option value="">Select Product</option>
+                {% for product in products %}
+                    <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="quantity" class="form-control" placeholder="Quantity" required>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="cost" class="form-control" placeholder="Cost" step="0.01" required>
+        </div>
+        <div class="col-md-2">
+            <select name="status" class="form-select">
+                <option value="Pending">Pending</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">Add Order</button>
+        </div>
+    </form>
+    <h4>Orders</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+                <th>Status</th>
+                <th>Order Date</th>
+                <th>Delivery Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.cost }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ order.delivery_date.strftime('%Y-%m-%d') if order.delivery_date else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('suppliers_list') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if edit else 'Add' }} Customer - Duka POS{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">{{ 'Edit' if edit else 'Add' }} Customer</h3>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Customer Name *</label>
+                            <input type="text" class="form-control" name="name" required value="{{ customer.name if edit else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="business_name" class="form-label">Business Name</label>
+                            <input type="text" class="form-control" name="business_name" value="{{ customer.business_name if edit else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="contact_email" value="{{ customer.contact_email if edit else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" name="contact_phone" value="{{ customer.contact_phone if edit else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" name="address" value="{{ customer.address if edit else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="2">{{ customer.notes if edit else '' }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 mb-2">{{ 'Update' if edit else 'Add' }} Customer</button>
+                        <a href="{{ url_for('customers_list') }}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Back to Customers List
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
